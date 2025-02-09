@@ -1,0 +1,15 @@
+Authors:
+ * Andrea Doce Murillo                  A01799931
+    Parte #1- (Kruskal's):
+        The program should be deselected in the form of an optical cable with a fiber optic 
+        connection to the valley colonies, which can be used to provide information between the colonies.
+    Parte #2- (Traveling salesman):
+        The program must display the route to be considered, taking into account that the first city will be called A, the second B, and so on.
+        
+ * Carlos Alberto Zamudio Velázquez     A01799283
+    Parte #3- (Ford Fulkenson):
+        The program must also read another square matrix of N x N data that represents the maximum data transmission capacity between colony i and colony j.
+        
+ * Lorena Abigail Solís de los Santos   A01746602
+    Parte #4- (Búsqueda lineal):
+        The company wants to have a way to decide, given a new service contract, which is the center geographically closest to that new contract.
