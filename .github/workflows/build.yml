@@ -1,0 +1,64 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    name: Build, Test and Generate Coverage Report
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Clonar el repositorio
+      - uses: actions/checkout@v4
+
+      # 2. Instalar dependencias necesarias, incluyendo gcovr
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake build-essential gcovr
+
+      # 3. Configurar, compilar y ejecutar las pruebas con instrumentación para cobertura
+      - name: Configure, Build, and Test with Coverage
+        run: |
+          mkdir build
+          cd build
+          cmake -DCMAKE_CXX_FLAGS="--coverage -O0" ..
+          cmake --build .
+          ctest --output-on-failure
+
+      # 4. Generar el reporte de cobertura en formato XML compatible con SonarQube
+      - name: Generate Coverage Report in SonarQube XML format
+        run: |
+          cd build
+          gcovr -r .. --sonarqube -o coverage.xml
+          ls -l coverage.xml
+
+      # 5. Guardar los artefactos para el siguiente job (incluyendo coverage.xml)
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: build/
+
+  sonarqube-analysis:
+    name: SonarQube Analysis
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      # Descargar los artefactos generados (incluyendo el coverage.xml)
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: build/
+
+      # Ejecutar el análisis de SonarQube
+      - name: Run SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@v3
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
